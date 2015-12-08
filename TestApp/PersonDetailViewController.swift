@@ -11,12 +11,12 @@ import UIKit
 protocol PersonDetailViewControllerDelegate: class {
   func personDetailViewControllerDidCancel(controller: PersonDetailViewController)
   func personDetailViewController(controller: PersonDetailViewController, didFinishAddingPerson person: Person)
-  //func personDetailViewController(controller: PersonDetailViewController, didFinishEditingPerson person: Person)
+  func personDetailViewController(controller: PersonDetailViewController, didFinishEditingPerson person: Person)
 }
 
 class PersonDetailViewController: UITableViewController {
   
-  //var person: Person?
+  var personToEdit: Person?
   weak var delegate: PersonDetailViewControllerDelegate?
   
   @IBOutlet weak var firstNameField: UITextField!
@@ -28,7 +28,14 @@ class PersonDetailViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
+    if let person = personToEdit {
+      title = "Edit Person"
+      firstNameField.text = person.firstName
+      lastNameField.text = person.lastName
+      phoneField.text = person.phoneNumber
+      emailField.text = person.email
+      addressField.text = person.address
+    }
   }
   
   override func viewWillAppear(animated: Bool) {
@@ -46,23 +53,42 @@ class PersonDetailViewController: UITableViewController {
   }
   
   @IBAction func done() {
-    let newPerson = Person()
-    if let firstName = firstNameField.text {
-      newPerson.firstName = firstName
+    if let person = personToEdit {
+      if let firstName = firstNameField.text {
+        person.firstName = firstName
+      }
+      if let lastName = lastNameField.text {
+        person.lastName = lastName
+      }
+      if let phoneNumber = phoneField.text {
+        person.phoneNumber = phoneNumber
+      }
+      if let email = emailField.text {
+        person.email = email
+      }
+      if let address = addressField.text {
+        person.address = address
+      }
+      delegate?.personDetailViewController(self, didFinishEditingPerson: person)
+    } else {
+      let newPerson = Person()
+      if let firstName = firstNameField.text {
+        newPerson.firstName = firstName
+      }
+      if let lastName = lastNameField.text {
+        newPerson.lastName = lastName
+      }
+      if let phoneNumber = phoneField.text {
+        newPerson.phoneNumber = phoneNumber
+      }
+      if let email = emailField.text {
+        newPerson.email = email
+      }
+      if let address = addressField.text {
+        newPerson.address = address
+      }
+      delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
     }
-    if let lastName = lastNameField.text {
-      newPerson.lastName = lastName
-    }
-    if let phoneNumber = phoneField.text {
-      newPerson.phoneNumber = phoneNumber
-    }
-    if let email = emailField.text {
-      newPerson.email = email
-    }
-    if let address = addressField.text {
-      newPerson.address = address
-    }
-    delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
   }
   
 }
