@@ -250,6 +250,41 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="CCd-Zu-fN2">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="w5Q-ou-3qP">
+                                        <rect key="frame" x="0.0" y="311" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="w5Q-ou-3qP" id="yoS-IQ-s7i">
+                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Add Photo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MxY-om-EOU">
+                                                    <rect key="frame" x="8" y="11" width="81" height="21"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g2G-pr-pNa">
+                                                    <rect key="frame" x="2" y="2" width="40" height="40"/>
+                                                    <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="40" id="mJe-NJ-JNx"/>
+                                                        <constraint firstAttribute="width" constant="40" id="qPO-zv-M32"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstItem="g2G-pr-pNa" firstAttribute="leading" secondItem="yoS-IQ-s7i" secondAttribute="leading" constant="2" id="FSD-IM-AXm"/>
+                                                <constraint firstItem="g2G-pr-pNa" firstAttribute="centerY" secondItem="yoS-IQ-s7i" secondAttribute="centerY" id="I1z-dq-JAA"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="Ixd-uP-Npu" id="WKT-IN-AEI"/>
@@ -269,9 +304,11 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="addPhotoLabel" destination="MxY-om-EOU" id="gNp-yX-gJH"/>
                         <outlet property="addressField" destination="Ida-Rc-vpr" id="AFY-G1-AH9"/>
                         <outlet property="emailField" destination="4YP-mv-i2u" id="KQt-c6-4Vq"/>
                         <outlet property="firstNameField" destination="y0M-9b-D5p" id="m3h-pY-T6g"/>
+                        <outlet property="imageView" destination="g2G-pr-pNa" id="Mv6-9f-4jd"/>
                         <outlet property="lastNameField" destination="wEK-Gs-83m" id="OZE-qQ-BHp"/>
                         <outlet property="phoneField" destination="z7L-TE-aU4" id="9PT-X5-ir8"/>
                     </connections>

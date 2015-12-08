@@ -17,6 +17,7 @@ protocol PersonDetailViewControllerDelegate: class {
 class PersonDetailViewController: UITableViewController {
   
   var personToEdit: Person?
+  var image: UIImage?
   weak var delegate: PersonDetailViewControllerDelegate?
   
   @IBOutlet weak var firstNameField: UITextField!
@@ -24,6 +25,8 @@ class PersonDetailViewController: UITableViewController {
   @IBOutlet weak var phoneField: UITextField!
   @IBOutlet weak var emailField: UITextField!
   @IBOutlet weak var addressField: UITextField!
+  @IBOutlet weak var addPhotoLabel: UILabel!
+  @IBOutlet weak var imageView: UIImageView!
   @IBOutlet weak var doneBarButton: UIBarButtonItem!
   
   override func viewDidLoad() {
@@ -35,12 +38,22 @@ class PersonDetailViewController: UITableViewController {
       phoneField.text = person.phoneNumber
       emailField.text = person.email
       addressField.text = person.address
+      if let photo = person.photo {
+        showImage(photo)
+      }
     }
   }
   
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
     firstNameField.becomeFirstResponder()
+  }
+  
+  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    if indexPath.section == 1 {
+      tableView.deselectRowAtIndexPath(indexPath, animated: true)
+      pickPhoto()
+    }
   }
   
   override func didReceiveMemoryWarning() {
@@ -69,6 +82,9 @@ class PersonDetailViewController: UITableViewController {
       if let address = addressField.text {
         person.address = address
       }
+      if let photo = imageView.image {
+        person.photo = photo
+      }
       delegate?.personDetailViewController(self, didFinishEditingPerson: person)
     } else {
       let newPerson = Person()
@@ -87,8 +103,75 @@ class PersonDetailViewController: UITableViewController {
       if let address = addressField.text {
         newPerson.address = address
       }
+      if let photo = imageView.image {
+        newPerson.photo = photo
+      }
       delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
     }
   }
   
+  func showImage(image: UIImage) {
+    imageView.image = image
+    imageView.hidden = false
+    addPhotoLabel.hidden = true
+  }
+  
+}
+
+extension PersonDetailViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+  
+  func imagePickerController(picker: UIImagePickerController,
+    didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+      image = info[UIImagePickerControllerEditedImage] as? UIImage
+      if let image = image {
+        showImage(image)
+      }
+      tableView.reloadData()
+      dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  func pickPhoto() {
+    if UIImagePickerController.isSourceTypeAvailable(.Camera) {
+      showPhotoMenu()
+    } else {
+      choosePhotoFromLibrary()
+    }
+  }
+  
+  func showPhotoMenu() {
+    let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+    
+    let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+    alertController.addAction(cancelAction)
+    
+    let takePhotoAction = UIAlertAction(title: "Take Photo", style: .Default, handler: { _ in self.takePhotoWithCamera() })
+    alertController.addAction(takePhotoAction)
+    
+    let chooseFromLibraryAction = UIAlertAction(title: "Choose From Library", style: .Default, handler: { _ in self.choosePhotoFromLibrary() })
+    alertController.addAction(chooseFromLibraryAction)
+    
+    presentViewController(alertController, animated: true, completion: nil)
+  }
+  
+  func choosePhotoFromLibrary() {
+    let imagePicker = UIImagePickerController()
+    imagePicker.view.tintColor = view.tintColor
+    imagePicker.sourceType = .PhotoLibrary
+    imagePicker.delegate = self
+    imagePicker.allowsEditing = true
+    presentViewController(imagePicker, animated: true, completion: nil)
+  }
+  
+  func takePhotoWithCamera() {
+    let imagePicker = UIImagePickerController()
+    imagePicker.view.tintColor = view.tintColor
+    imagePicker.sourceType = .Camera
+    imagePicker.delegate = self
+    imagePicker.allowsEditing = true
+    presentViewController(imagePicker, animated: true, completion: nil)
+  }
 }

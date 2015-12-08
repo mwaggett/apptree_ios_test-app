@@ -33,6 +33,10 @@ class PersonViewController: UITableViewController {
     return cell
   }
   
+  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  }
+  
   override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     dataModel.people.removeAtIndex(indexPath.row)
     let indexPaths = [indexPath]
@@ -73,7 +77,11 @@ class PersonViewController: UITableViewController {
     emailLabel.sizeToFit()
     addressLabel.text = person.address
     addressLabel.sizeToFit()
-    imageView.image = UIImage(named: "No Photo")
+    if let image = person.photo {
+      imageView.image = image
+    } else {
+      imageView.image = UIImage(named: "No Photo")
+    }
   }
 
 }

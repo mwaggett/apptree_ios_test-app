@@ -17,7 +17,7 @@ class Person: NSObject {
   var email = ""
   var phoneNumber = ""
   var address = ""
-  //var photo
+  var photo: UIImage?
   
   class func createFakeData() -> [Person] {
     var people = [Person]()
