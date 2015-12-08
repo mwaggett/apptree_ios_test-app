@@ -33,6 +33,12 @@ class PersonViewController: UITableViewController {
     return cell
   }
   
+  override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    people.removeAtIndex(indexPath.row)
+    let indexPaths = [indexPath]
+    tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+  }
+  
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if segue.identifier == "AddPerson" {
       let navigationController = segue.destinationViewController as! UINavigationController
