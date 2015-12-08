@@ -33,6 +33,14 @@ class PersonViewController: UITableViewController {
     return cell
   }
   
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "AddPerson" {
+      let navigationController = segue.destinationViewController as! UINavigationController
+      let controller = navigationController.topViewController as! PersonDetailViewController
+      controller.delegate = self
+    }
+  }
+  
   func configureCell(cell: UITableViewCell, withPerson person: Person) {
     let nameLabel = cell.viewWithTag(1000) as! UILabel
     let phoneLabel = cell.viewWithTag(1001) as! UILabel
@@ -51,5 +59,18 @@ class PersonViewController: UITableViewController {
     imageView.image = UIImage(named: "No Photo")
   }
 
+}
+
+extension PersonViewController: PersonDetailViewControllerDelegate {
+  
+  func personDetailViewControllerDidCancel(controller: PersonDetailViewController) {
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  func personDetailViewController(controller: PersonDetailViewController, didFinishAddingPerson person: Person) {
+    people.append(person)
+    tableView.reloadData()
+    dismissViewControllerAnimated(true, completion: nil)
+  }
 }
 
