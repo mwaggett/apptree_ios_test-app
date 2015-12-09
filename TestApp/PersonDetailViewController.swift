@@ -66,6 +66,7 @@ class PersonDetailViewController: UITableViewController {
   }
   
   @IBAction func done() {
+    //var filledInWell = false
     if let person = personToEdit {
       if let firstName = firstNameField.text {
         person.firstName = firstName
@@ -85,7 +86,11 @@ class PersonDetailViewController: UITableViewController {
       if let photo = imageView.image {
         person.photo = photo
       }
-      delegate?.personDetailViewController(self, didFinishEditingPerson: person)
+      if validateEmail(person.email) && validatePhoneNumber(person.phoneNumber) && (person.fullName.characters.count > 1) {
+        delegate?.personDetailViewController(self, didFinishEditingPerson: person)
+      } else {
+        showBadInputAlert()
+      }
     } else {
       let newPerson = Person()
       if let firstName = firstNameField.text {
@@ -106,7 +111,11 @@ class PersonDetailViewController: UITableViewController {
       if let photo = imageView.image {
         newPerson.photo = photo
       }
-      delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
+      if validateEmail(newPerson.email) && validatePhoneNumber(newPerson.phoneNumber) && (newPerson.fullName.characters.count > 1) {
+        delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
+      } else {
+        showBadInputAlert()
+      }
     }
   }
   
@@ -114,6 +123,37 @@ class PersonDetailViewController: UITableViewController {
     imageView.image = image
     imageView.hidden = false
     addPhotoLabel.hidden = true
+  }
+  
+  func validateEmail(email: String) -> Bool { // only checks for '@' with something on either side
+    do {
+      let regex: NSRegularExpression = try NSRegularExpression(pattern: "(.+)@(.+)", options: NSRegularExpressionOptions())
+      let matches = regex.matchesInString(email, options: NSMatchingOptions(), range: NSMakeRange(0, email.characters.count))
+      print(matches)
+      return matches.count > 0 || email.characters.count == 0
+    } catch {
+      print("Error")
+      return false
+    }
+  }
+  
+  func validatePhoneNumber(phoneNumber: String) -> Bool {
+    do {
+      let regex: NSRegularExpression = try NSRegularExpression(pattern: "[^0-9]", options: NSRegularExpressionOptions())
+      let strippedNumber = NSMutableString(string: phoneNumber)
+      regex.replaceMatchesInString(strippedNumber, options: NSMatchingOptions(), range: NSMakeRange(0, strippedNumber.length), withTemplate: "")
+      return strippedNumber.length == 10 || strippedNumber.length == 0
+    } catch {
+      print("Error")
+      return false
+    }
+  }
+  
+  func showBadInputAlert() {
+    let alert = UIAlertController(title: "Oops!", message: "One or more of the fields have been filled in incorrectly. Please try again.", preferredStyle: .Alert)
+    let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
+    alert.addAction(action)
+    presentViewController(alert, animated: true, completion: nil)
   }
   
 }
