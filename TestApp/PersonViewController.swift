@@ -14,7 +14,9 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
+    dataModel.fetchData({
+      self.tableView.reloadData()
+    })
   }
 
   override func didReceiveMemoryWarning() {
