@@ -90,9 +90,26 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
     addressLabel.sizeToFit()
     if let image = person.photo {
       imageView.image = image
-    } else {
+    } else if let photoURLString = person.photoURL {
+      if let photoURL = NSURL(string: photoURLString) {
+        loadImageWithURL(photoURL, intoView: imageView)
+      }
+    }
+    if imageView.image == nil {
       imageView.image = UIImage(named: "No Photo")
     }
+  }
+  
+  func loadImageWithURL(url: NSURL, intoView imageView: UIImageView) {
+    let session = NSURLSession.sharedSession()
+    let downloadTask = session.downloadTaskWithURL(url, completionHandler: { url, response, error in
+      if error == nil, let url = url, data = NSData(contentsOfURL: url), image = UIImage(data: data) {
+        dispatch_async(dispatch_get_main_queue()) {
+          imageView.image = image
+        }
+      }
+    })
+    downloadTask.resume()
   }
 
 }

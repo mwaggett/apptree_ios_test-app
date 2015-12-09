@@ -23,5 +23,6 @@ class Person: NSObject {
   var phoneNumber = ""
   var address = ""
   var photo: UIImage?
+  var photoURL: String?
   
 }

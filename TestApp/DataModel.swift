@@ -104,8 +104,8 @@ class DataModel {
         if let address = personDict["address"] as? String {
           person.address = address
         }
-        if let photo = personDict["photo"] as? String {
-          //try to download photo
+        if let photoURL = personDict["photo"] as? String {
+          person.photoURL = photoURL
         }
         people.append(person)
       }
