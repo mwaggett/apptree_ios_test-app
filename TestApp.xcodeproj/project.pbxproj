@@ -10,6 +10,7 @@
 		BA9C11AA1C1746E400FB201B /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9C11A91C1746E400FB201B /* Person.swift */; };
 		BA9C11B01C176A0400FB201B /* PersonDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9C11AF1C176A0400FB201B /* PersonDetailViewController.swift */; };
 		BA9C11B21C17795500FB201B /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9C11B11C17795500FB201B /* DataModel.swift */; };
+		BA9C11B41C179A4000FB201B /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9C11B31C179A4000FB201B /* OptionsViewController.swift */; };
 		BABC0A031C16620700DD133A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC0A021C16620700DD133A /* AppDelegate.swift */; };
 		BABC0A051C16620700DD133A /* PersonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABC0A041C16620700DD133A /* PersonViewController.swift */; };
 		BABC0A081C16620800DD133A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BABC0A061C16620800DD133A /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 		BA9C11A91C1746E400FB201B /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		BA9C11AF1C176A0400FB201B /* PersonDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonDetailViewController.swift; sourceTree = "<group>"; };
 		BA9C11B11C17795500FB201B /* DataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		BA9C11B31C179A4000FB201B /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
 		BABC09FF1C16620700DD133A /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BABC0A021C16620700DD133A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BABC0A041C16620700DD133A /* PersonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonViewController.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				BABC0A0E1C16620800DD133A /* Info.plist */,
 				BABC0A021C16620700DD133A /* AppDelegate.swift */,
 				BA9C11B11C17795500FB201B /* DataModel.swift */,
+				BA9C11B31C179A4000FB201B /* OptionsViewController.swift */,
 				BA9C11A91C1746E400FB201B /* Person.swift */,
 				BA9C11AF1C176A0400FB201B /* PersonDetailViewController.swift */,
 				BABC0A041C16620700DD133A /* PersonViewController.swift */,
@@ -147,6 +150,7 @@
 				BA9C11B21C17795500FB201B /* DataModel.swift in Sources */,
 				BA9C11B01C176A0400FB201B /* PersonDetailViewController.swift in Sources */,
 				BA9C11AA1C1746E400FB201B /* Person.swift in Sources */,
+				BA9C11B41C179A4000FB201B /* OptionsViewController.swift in Sources */,
 				BABC0A051C16620700DD133A /* PersonViewController.swift in Sources */,
 				BABC0A031C16620700DD133A /* AppDelegate.swift in Sources */,
 			);

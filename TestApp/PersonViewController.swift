@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PersonViewController: UITableViewController {
+class PersonViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
   
   var dataModel = DataModel()
 
@@ -56,7 +56,16 @@ class PersonViewController: UITableViewController {
         let index = sender.tag - 2000
         controller.personToEdit = dataModel.people[index]
       }
+    } else if segue.identifier == "ShowOptions" {
+      let controller = segue.destinationViewController as! OptionsViewController
+      controller.delegate = self
+      controller.popoverPresentationController?.delegate = self
+      //controller.tableView.frame = CGRectMake(0, 0, controller.tableView.bounds.width, controller.tableView.rowHeight * 3)
     }
+  }
+  
+  func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+    return .None
   }
   
   func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath, withPerson person: Person) {
@@ -69,7 +78,7 @@ class PersonViewController: UITableViewController {
       editButton.tag = 2000 + indexPath.row // change tag to correspond to indexPath if it hasn't been changed already
     }                                       // I'm sure this is a bad idea, but it's what I've got for now.
     
-    nameLabel.text = person.firstName + " " + person.lastName
+    nameLabel.text = person.fullName
     nameLabel.sizeToFit()
     phoneLabel.text = person.phoneNumber
     phoneLabel.sizeToFit()
@@ -101,6 +110,40 @@ extension PersonViewController: PersonDetailViewControllerDelegate {
   func personDetailViewController(controller: PersonDetailViewController, didFinishEditingPerson person: Person) {
     tableView.reloadData()
     dismissViewControllerAnimated(true, completion: nil)
+  }
+}
+
+extension PersonViewController: OptionsViewControllerDelegate {
+  
+  func optionsViewControllerSortByAddress(controller: OptionsViewController) {
+    dataModel.people.sortInPlace({ person1, person2 in return
+      person1.address.localizedStandardCompare(person2.address) == .OrderedAscending })
+    tableView.reloadData()
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  func optionsViewControllerSortByName(controller: OptionsViewController) {
+    dataModel.people.sortInPlace({ person1, person2 in return
+      person1.fullName.localizedStandardCompare(person2.fullName) == .OrderedAscending })
+    tableView.reloadData()
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  func optionsViewControllerFixPhoneNumberFormatting(controller: OptionsViewController) {
+    do {
+      let regex: NSRegularExpression = try NSRegularExpression(pattern: "[^0-9]", options: NSRegularExpressionOptions())
+      for person in dataModel.people {
+        let strippedNumber = NSMutableString(string: person.phoneNumber)
+        regex.replaceMatchesInString(strippedNumber, options: NSMatchingOptions(), range: NSMakeRange(0, strippedNumber.length), withTemplate: "")
+        let areaCode = strippedNumber.substringWithRange(NSRange(location: 0, length: 3))
+        let middleThree = strippedNumber.substringWithRange(NSRange(location: 3, length: 3))
+        let lastFour = strippedNumber.substringWithRange(NSRange(location: 6, length: 4))
+        person.phoneNumber = String("("+areaCode+") "+middleThree+" - "+lastFour)
+      }
+      tableView.reloadData()
+      dismissViewControllerAnimated(true, completion: nil)
+    } catch {
+      dismissViewControllerAnimated(true, completion: nil)
+    }
   }
 }
 

@@ -14,6 +14,11 @@ class Person: NSObject {
   var id = 0
   var firstName = ""
   var lastName = ""
+  var fullName: String {
+    get {
+      return firstName + " " + lastName
+    }
+  }
   var email = ""
   var phoneNumber = ""
   var address = ""
