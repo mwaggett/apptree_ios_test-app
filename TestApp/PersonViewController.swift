@@ -134,10 +134,14 @@ extension PersonViewController: OptionsViewControllerDelegate {
       for person in dataModel.people {
         let strippedNumber = NSMutableString(string: person.phoneNumber)
         regex.replaceMatchesInString(strippedNumber, options: NSMatchingOptions(), range: NSMakeRange(0, strippedNumber.length), withTemplate: "")
-        let areaCode = strippedNumber.substringWithRange(NSRange(location: 0, length: 3))
-        let middleThree = strippedNumber.substringWithRange(NSRange(location: 3, length: 3))
-        let lastFour = strippedNumber.substringWithRange(NSRange(location: 6, length: 4))
-        person.phoneNumber = String("("+areaCode+") "+middleThree+" - "+lastFour)
+        if strippedNumber.length == 10 {
+          let areaCode = strippedNumber.substringWithRange(NSRange(location: 0, length: 3))
+          let middleThree = strippedNumber.substringWithRange(NSRange(location: 3, length: 3))
+          let lastFour = strippedNumber.substringWithRange(NSRange(location: 6, length: 4))
+          person.phoneNumber = String("("+areaCode+") "+middleThree+" - "+lastFour)
+        } else {
+          person.phoneNumber = String(strippedNumber)
+        }
       }
       tableView.reloadData()
       dismissViewControllerAnimated(true, completion: nil)
