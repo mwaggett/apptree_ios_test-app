@@ -7,16 +7,27 @@
 //
 
 import UIKit
+import CoreData
 
-class PersonViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+class PersonViewController: UITableViewController {
   
-  var dataModel = DataModel()
+  var managedObjectContext: NSManagedObjectContext!
+  lazy var fetchedResultsController: NSFetchedResultsController = {
+    let fetchRequest = NSFetchRequest()
+    let entity = NSEntityDescription.entityForName("Person", inManagedObjectContext: self.managedObjectContext)
+    fetchRequest.entity = entity
+    fetchRequest.sortDescriptors = []
+    fetchRequest.fetchBatchSize = 20
+    
+    let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: "People")
+    return fetchedResultsController
+  }()
+  
+  var people = [Person]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    dataModel.fetchData({
-      self.tableView.reloadData()
-    })
+    performFetch()
   }
 
   override func didReceiveMemoryWarning() {
@@ -25,12 +36,12 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
   }
   
   override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return dataModel.people.count
+    return people.count
   }
   
   override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier("PersonCell", forIndexPath: indexPath)
-    let person = dataModel.people[indexPath.row]
+    let person = people[indexPath.row]
     configureCell(cell, atIndexPath: indexPath, withPerson: person)
     return cell
   }
@@ -40,9 +51,16 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
   }
   
   override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-    dataModel.people.removeAtIndex(indexPath.row)
+    let personToDelete = people[indexPath.row]
+    people.removeAtIndex(indexPath.row)
     let indexPaths = [indexPath]
     tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+    managedObjectContext.deleteObject(personToDelete)
+    do {
+      try managedObjectContext.save()
+    } catch {
+      fatalError("Error: \(error)")
+    }
   }
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -50,24 +68,21 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
       let navigationController = segue.destinationViewController as! UINavigationController
       let controller = navigationController.topViewController as! PersonDetailViewController
       controller.delegate = self
+      controller.managedObjectContext = managedObjectContext
     } else if segue.identifier == "EditPerson" {
       let navigationController = segue.destinationViewController as! UINavigationController
       let controller = navigationController.topViewController as! PersonDetailViewController
       controller.delegate = self
+      controller.managedObjectContext = managedObjectContext
       if let sender = sender {
         let index = sender.tag - 2000
-        controller.personToEdit = dataModel.people[index]
+        controller.personToEdit = people[index]
       }
     } else if segue.identifier == "ShowOptions" {
       let controller = segue.destinationViewController as! OptionsViewController
       controller.delegate = self
       controller.popoverPresentationController?.delegate = self
-      //controller.tableView.frame = CGRectMake(0, 0, controller.tableView.bounds.width, controller.tableView.rowHeight * 3)
     }
-  }
-  
-  func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
-    return .None
   }
   
   func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath, withPerson person: Person) {
@@ -80,7 +95,7 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
       editButton.tag = 2000 + indexPath.row // change tag to correspond to indexPath if it hasn't been changed already
     }                                       // I'm sure this is a bad idea, but it's what I've got for now.
     
-    nameLabel.text = person.fullName
+    nameLabel.text = person.firstName + " " + person.lastName
     nameLabel.sizeToFit()
     phoneLabel.text = person.phoneNumber
     phoneLabel.sizeToFit()
@@ -88,9 +103,9 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
     emailLabel.sizeToFit()
     addressLabel.text = person.address
     addressLabel.sizeToFit()
-    if let image = person.photo {
-      imageView.image = image
-    } else if let photoURLString = person.photoURL {
+    //if let image = person.photo {
+      //imageView.image = image
+    if let photoURLString = person.photoURL {
       if let photoURL = NSURL(string: photoURLString) {
         loadImageWithURL(photoURL, intoView: imageView)
       }
@@ -111,6 +126,15 @@ class PersonViewController: UITableViewController, UIPopoverPresentationControll
     })
     downloadTask.resume()
   }
+  
+  func performFetch() {
+    do {
+      try fetchedResultsController.performFetch()
+      people = fetchedResultsController.fetchedObjects as! [Person]
+    } catch {
+      fatalError("Error fetching objects from Core Data")
+    }
+  }
 
 }
 
@@ -121,12 +145,13 @@ extension PersonViewController: PersonDetailViewControllerDelegate {
   }
   
   func personDetailViewController(controller: PersonDetailViewController, didFinishAddingPerson person: Person) {
-    dataModel.people.append(person)
+    performFetch()
     tableView.reloadData()
     dismissViewControllerAnimated(true, completion: nil)
   }
   
   func personDetailViewController(controller: PersonDetailViewController, didFinishEditingPerson person: Person) {
+    performFetch()
     tableView.reloadData()
     dismissViewControllerAnimated(true, completion: nil)
   }
@@ -135,14 +160,14 @@ extension PersonViewController: PersonDetailViewControllerDelegate {
 extension PersonViewController: OptionsViewControllerDelegate {
   
   func optionsViewControllerSortByAddress(controller: OptionsViewController) {
-    dataModel.people.sortInPlace({ person1, person2 in return
+    people.sortInPlace({ person1, person2 in return
       person1.address.localizedStandardCompare(person2.address) == .OrderedAscending })
     tableView.reloadData()
     dismissViewControllerAnimated(true, completion: nil)
   }
   func optionsViewControllerSortByName(controller: OptionsViewController) {
-    dataModel.people.sortInPlace({ person1, person2 in return
-      person1.fullName.localizedStandardCompare(person2.fullName) == .OrderedAscending })
+    people.sortInPlace({ person1, person2 in return
+      person1.lastName.localizedStandardCompare(person2.lastName) == .OrderedAscending })
     tableView.reloadData()
     dismissViewControllerAnimated(true, completion: nil)
   }
@@ -150,7 +175,7 @@ extension PersonViewController: OptionsViewControllerDelegate {
   func optionsViewControllerFixPhoneNumberFormatting(controller: OptionsViewController) {
     do {
       let regex: NSRegularExpression = try NSRegularExpression(pattern: "[^0-9]", options: NSRegularExpressionOptions())
-      for person in dataModel.people {
+      for person in people {
         let strippedNumber = NSMutableString(string: person.phoneNumber)
         regex.replaceMatchesInString(strippedNumber, options: NSMatchingOptions(), range: NSMakeRange(0, strippedNumber.length), withTemplate: "")
         if strippedNumber.length == 10 {
@@ -162,11 +187,22 @@ extension PersonViewController: OptionsViewControllerDelegate {
           person.phoneNumber = String(strippedNumber)
         }
       }
+      do { // save formatted numbers
+        try managedObjectContext.save()
+      } catch {
+        fatalError("Error: \(error)")
+      }
       tableView.reloadData()
       dismissViewControllerAnimated(true, completion: nil)
     } catch {
       dismissViewControllerAnimated(true, completion: nil)
     }
+  }
+}
+
+extension PersonViewController: UIPopoverPresentationControllerDelegate {
+  func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+    return .None
   }
 }
 
