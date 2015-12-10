@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol PersonDetailViewControllerDelegate: class {
   func personDetailViewControllerDidCancel(controller: PersonDetailViewController)
@@ -15,6 +16,8 @@ protocol PersonDetailViewControllerDelegate: class {
 }
 
 class PersonDetailViewController: UITableViewController {
+  
+  var managedObjectContext: NSManagedObjectContext!
   
   var personToEdit: Person?
   var image: UIImage?
@@ -38,9 +41,9 @@ class PersonDetailViewController: UITableViewController {
       phoneField.text = person.phoneNumber
       emailField.text = person.email
       addressField.text = person.address
-      if let photo = person.photo {
-        showImage(photo)
-      }
+//      if let photo = person.photo {
+//        showImage(photo)
+//      }
     }
   }
   
@@ -66,7 +69,6 @@ class PersonDetailViewController: UITableViewController {
   }
   
   @IBAction func done() {
-    //var filledInWell = false
     if let person = personToEdit {
       if let firstName = firstNameField.text {
         person.firstName = firstName
@@ -83,16 +85,22 @@ class PersonDetailViewController: UITableViewController {
       if let address = addressField.text {
         person.address = address
       }
-      if let photo = imageView.image {
-        person.photo = photo
-      }
-      if validateEmail(person.email) && validatePhoneNumber(person.phoneNumber) && (person.fullName.characters.count > 1) {
+//      if let photo = imageView.image {
+//        person.photo = photo
+//      }
+      if validateEmail(person.email) && validatePhoneNumber(person.phoneNumber)
+          && (person.firstName.characters.count > 0 || person.lastName.characters.count > 0) {
+        do {
+          try managedObjectContext.save()
+        } catch {
+          fatalError("Error: \(error)")
+        }
         delegate?.personDetailViewController(self, didFinishEditingPerson: person)
       } else {
         showBadInputAlert()
       }
     } else {
-      let newPerson = Person()
+      let newPerson = NSEntityDescription.insertNewObjectForEntityForName("Person", inManagedObjectContext: managedObjectContext) as! Person
       if let firstName = firstNameField.text {
         newPerson.firstName = firstName
       }
@@ -108,10 +116,16 @@ class PersonDetailViewController: UITableViewController {
       if let address = addressField.text {
         newPerson.address = address
       }
-      if let photo = imageView.image {
-        newPerson.photo = photo
-      }
-      if validateEmail(newPerson.email) && validatePhoneNumber(newPerson.phoneNumber) && (newPerson.fullName.characters.count > 1) {
+//      if let photo = imageView.image {
+//        newPerson.photo = photo
+//      }
+      if validateEmail(newPerson.email) && validatePhoneNumber(newPerson.phoneNumber)
+          && (newPerson.firstName.characters.count > 0 || newPerson.lastName.characters.count > 0) {
+        do {
+          try managedObjectContext.save()
+        } catch {
+          fatalError("Error: \(error)")
+        }
         delegate?.personDetailViewController(self, didFinishAddingPerson: newPerson)
       } else {
         showBadInputAlert()

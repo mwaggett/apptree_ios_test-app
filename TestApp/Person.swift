@@ -2,27 +2,16 @@
 //  Person.swift
 //  TestApp
 //
-//  Created by Molly Waggett on 12/8/15.
+//  Created by Molly Waggett on 12/9/15.
 //  Copyright © 2015 Molly Waggett. All rights reserved.
 //
 
 import Foundation
-import UIKit
+import CoreData
 
-class Person: NSObject {
-  
-  var id = 0
-  var firstName = ""
-  var lastName = ""
-  var fullName: String {
-    get {
-      return firstName + " " + lastName
-    }
-  }
-  var email = ""
-  var phoneNumber = ""
-  var address = ""
-  var photo: UIImage?
-  var photoURL: String?
-  
+
+class Person: NSManagedObject {
+
+// Insert code here to add functionality to your managed object subclass
+
 }
